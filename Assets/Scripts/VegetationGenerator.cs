@@ -42,6 +42,22 @@ public class VegetationGenerator : MonoBehaviour
         // Instantiate & transform random "vegetationPrefab"
 
         // your code here
+        for (int i = 0; i < numObjects; i++)
+        {
+            int someIndex = Random.Range(0, vegetationPrefabs.Count);
+            GameObject somePlant = vegetationPrefabs[someIndex];
+            Vector3 plantVector = new Vector3(
+                Random.Range(vegetationBoundsMin.x, vegetationBoundsMax.x),
+                0,
+                Random.Range(vegetationBoundsMin.z, vegetationBoundsMax.z)
+            );
+            Instantiate(somePlant, this.gameObject.transform);
+
+            somePlant.transform.position = plantVector;
+            somePlant.transform.rotation = new Quaternion(0, Random.Range(0, 360), 0, 0);
+            instances.Add(somePlant);
+            //to continue (nel)
+        }
 
         // Collisions need to be resolved at a later time,
         // because Unity physics loop (Unity-internal evaluation of collisions)
