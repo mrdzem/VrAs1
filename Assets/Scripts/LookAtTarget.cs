@@ -18,5 +18,6 @@ public class LookAtTarget : MonoBehaviour
     void Update()
     {
         // TODO: Exercise 1.4 -> 2.)
+        transform.LookAt(target.position + offset, Vector3.up);
     }
 }
