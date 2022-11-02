@@ -26,7 +26,23 @@ public class ParentSwitcher : MonoBehaviour
     void SetParent(int idx)
     {
         // TODO: Exercise 1.4 -> 1.)
+        //if (Event.current.Equals(Event.KeyboardEvent(nextParentKey.ToString())))
+        //{
+            this.gameObject.transform.SetParent(parents[idx]);
+        //}
         
+
         // what is the effect of worldPositionStays?
+        /*
+        The default value of worldPositionStays argument is true, wich modifies the parent relative position, scale and rotation
+        so that the objects keeps the same world space position, rotation and scale as before.
+        
+
+        If false, the child keeps its local orientation rather than its global orientation also moving 
+        the GameObject to be positioned next to its new parent.
+
+        
+
+        */
     }
 }
