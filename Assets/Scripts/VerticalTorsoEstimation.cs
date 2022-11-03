@@ -18,6 +18,8 @@ namespace Vrsys
         void Update()
         {
             // TODO Exercise 1.6
+            transform.rotation = Quaternion.LookRotation(headTransform.parent.forward,Vector3.up);
+            this.transform.localPosition = new Vector3(0,0,-0.2f);
         }
     }
 }
