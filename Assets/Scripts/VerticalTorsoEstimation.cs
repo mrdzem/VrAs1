@@ -18,8 +18,7 @@ namespace Vrsys
         void Update()
         {
             // TODO Exercise 1.6
-            //this.transform.localPosition = new Vector3(0, 0, 0);
-            //print(headTransform.eulerAngles.x);
+
             float Rotation;
             if (headTransform.eulerAngles.x <= 180f)
             {
@@ -31,29 +30,25 @@ namespace Vrsys
             }
 
             this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);
-            this.transform.localPosition = new Vector3(0, 0, 0);
+            
             this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
 
-
-            if ( Rotation > 20f ) {
-                print(Rotation);
-                //this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);                
-                this.transform.localPosition = new Vector3(0, 0, Rotation*-0.005f);
-                //this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
-
-            }  
-            /*else
+            if (Rotation > 0.0f)
             {
-                this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);
-                this.transform.localPosition = new Vector3(0, 0, 0);
-                this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
-            }*/
-
-
-            //this.transform.localRotation = Quaternion.LookRotation(headTransform.forward,Vector3.up);
-            //this.transform.localPosition = new Vector3(0,0,0);
-            //this.transform.Translate(new Vector3(0, 0, 0), headTransform);
-            //this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
+                float dislocation = Rotation / 170.0f;
+                this.transform.localPosition =
+                    new Vector3(
+                        0,
+                        -Mathf.Abs(dislocation * headTransform.rotation.z),
+                        -Mathf.Abs(dislocation * headTransform.rotation.y)
+                        
+                        
+                        
+                    );
+            } else {
+                transform.localPosition = Vector3.zero;
+            }
+            
         }
     }
 }
