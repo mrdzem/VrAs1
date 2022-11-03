@@ -18,8 +18,42 @@ namespace Vrsys
         void Update()
         {
             // TODO Exercise 1.6
-            transform.rotation = Quaternion.LookRotation(headTransform.parent.forward,Vector3.up);
-            this.transform.localPosition = new Vector3(0,0,-0.2f);
+            //this.transform.localPosition = new Vector3(0, 0, 0);
+            //print(headTransform.eulerAngles.x);
+            float Rotation;
+            if (headTransform.eulerAngles.x <= 180f)
+            {
+                Rotation = headTransform.eulerAngles.x;
+            }
+            else
+            {
+                Rotation = headTransform.eulerAngles.x - 360f;
+            }
+
+            this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);
+            this.transform.localPosition = new Vector3(0, 0, 0);
+            this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
+
+
+            if ( Rotation > 20f ) {
+                print(Rotation);
+                //this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);                
+                this.transform.localPosition = new Vector3(0, 0, Rotation*-0.005f);
+                //this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
+
+            }  
+            /*else
+            {
+                this.transform.localRotation = Quaternion.LookRotation(headTransform.forward, Vector3.up);
+                this.transform.localPosition = new Vector3(0, 0, 0);
+                this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
+            }*/
+
+
+            //this.transform.localRotation = Quaternion.LookRotation(headTransform.forward,Vector3.up);
+            //this.transform.localPosition = new Vector3(0,0,0);
+            //this.transform.Translate(new Vector3(0, 0, 0), headTransform);
+            //this.transform.eulerAngles = new Vector3(0, headTransform.eulerAngles.y, headTransform.eulerAngles.z);
         }
     }
 }
