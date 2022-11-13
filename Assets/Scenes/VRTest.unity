@@ -2787,7 +2787,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 183
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -11229,6 +11229,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2687926716619863845, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2687926716709511829, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -11276,6 +11280,18 @@ PrefabInstance:
     - target: {fileID: 2687926716709511830, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
       propertyPath: m_Name
       value: Mirror
+      objectReference: {fileID: 0}
+    - target: {fileID: 2687926716709511830, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2687926716824978940, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2687926716838643542, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f41e8e68caaf5934ab869ee3783b7e62, type: 3}

@@ -19,6 +19,9 @@ public class AvatarBodySelection : MonoBehaviour
 
     private bool disableInputHandling = false;
 
+    private int layerMask = 1 << 7;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,12 +31,6 @@ public class AvatarBodySelection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (switchBodyAction.action.IsPressed())
-        {
-            print("is working?");
-        }
-
-
             int nextBodyIndex = CalcNextBodyIndex();
         if(nextBodyIndex != -1 && IsLookingAtMirror())
             AttachBodyPrefab(nextBodyIndex);
@@ -41,19 +38,34 @@ public class AvatarBodySelection : MonoBehaviour
 
     int CalcNextBodyIndex() // -1 means invalid aka "do nothing"
     {
-        if (switchBodyAction.action.IsPressed())
+        
+        if (switchBodyAction.action.WasPressedThisFrame() && IsLookingAtMirror())
         {
-            currentBodyIndex++;
-            Debug.Log(currentBodyIndex % 4);
-            print("yay");
+            if (switchBodyAction.action.ReadValue<Vector2>().x > 0)
+            {
+                currentBodyIndex++;
+            }
+            else if (switchBodyAction.action.ReadValue<Vector2>().x < 0)
+            {
+                currentBodyIndex--;
+                if(currentBodyIndex == -1)
+                {
+                    currentBodyIndex = bodyPrefabs.Count - 1;
+                }
+
+            }
+
+            Debug.Log(currentBodyIndex % bodyPrefabs.Count);
         }
+
         
         return currentBodyIndex % bodyPrefabs.Count;
     }
 
     bool IsLookingAtMirror()
     {
-        return false;
+        RaycastHit hit;     
+        return Physics.Raycast(this.transform.parent.position, this.transform.parent.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask);
     }
 
     private void AttachBodyPrefab(int index)

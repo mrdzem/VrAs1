@@ -779,13 +779,13 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "JoyStick RL",
-                    "type": "Button",
+                    "name": "JoyStick L",
+                    "type": "Value",
                     "id": "4bba3d7a-7264-4311-a59a-463dbe4c07e8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": "Press",
-                    "initialStateCheck": false
+                    "interactions": "Tap",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -891,11 +891,11 @@
                 {
                     "name": "",
                     "id": "ac7785ff-7eba-49c1-8b30-f07d89513304",
-                    "path": "<XRController>{RightHand}/gripPressed",
-                    "interactions": "",
+                    "path": "<XRController>{RightHand}/thumbstick",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "JoyStick RL",
+                    "action": "JoyStick L",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
