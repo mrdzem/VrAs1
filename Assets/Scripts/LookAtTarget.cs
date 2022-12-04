@@ -17,7 +17,7 @@ public class LookAtTarget : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO: Exercise 1.4 -> 2.)
-        transform.LookAt(target.position + offset, Vector3.up);
+        var forward = ((target.position + offset) - transform.position).normalized;
+        transform.rotation = Quaternion.LookRotation(forward);
     }
 }

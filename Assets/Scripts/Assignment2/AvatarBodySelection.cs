@@ -7,7 +7,7 @@ public class AvatarBodySelection : MonoBehaviour
 {
     public List<GameObject> bodyPrefabs = new List<GameObject>();
 
-    public InputActionProperty switchBodyAction; //Joystick LR
+    public InputActionProperty switchBodyAction;
 
     public LayerMask mirrorLayer;
 
@@ -19,9 +19,6 @@ public class AvatarBodySelection : MonoBehaviour
 
     private bool disableInputHandling = false;
 
-    private int layerMask = 1 << 7;
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -31,41 +28,34 @@ public class AvatarBodySelection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            int nextBodyIndex = CalcNextBodyIndex();
+        int nextBodyIndex = CalcNextBodyIndex();
         if(nextBodyIndex != -1 && IsLookingAtMirror())
             AttachBodyPrefab(nextBodyIndex);
     }
 
     int CalcNextBodyIndex() // -1 means invalid aka "do nothing"
     {
-        
-        if (switchBodyAction.action.WasPressedThisFrame() && IsLookingAtMirror())
+        var joystickValue = switchBodyAction.action.ReadValue<Vector2>();
+        if (Mathf.Abs(joystickValue.x) > 0.5 && !disableInputHandling)
         {
-            if (switchBodyAction.action.ReadValue<Vector2>().x > 0)
-            {
-                currentBodyIndex++;
-            }
-            else if (switchBodyAction.action.ReadValue<Vector2>().x < 0)
-            {
-                currentBodyIndex--;
-                if(currentBodyIndex == -1)
-                {
-                    currentBodyIndex = bodyPrefabs.Count - 1;
-                }
-
-            }
-
-            Debug.Log(currentBodyIndex % bodyPrefabs.Count);
+            int nextBodyIndex = (currentBodyIndex + (joystickValue.x > 0 ? 1 : -1));
+            if (nextBodyIndex < 0)
+                nextBodyIndex += bodyPrefabs.Count;
+            else
+                nextBodyIndex %= bodyPrefabs.Count;
+            disableInputHandling = true;
+            return nextBodyIndex;
         }
-
-        
-        return currentBodyIndex % bodyPrefabs.Count;
+        else if (Mathf.Abs(joystickValue.x) < 0.5 && disableInputHandling)
+        {
+            disableInputHandling = false;
+        }
+        return -1;
     }
 
     bool IsLookingAtMirror()
     {
-        RaycastHit hit;     
-        return Physics.Raycast(this.transform.parent.position, this.transform.parent.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask);
+        return Physics.Raycast(headTransform.position, headTransform.forward, 10, mirrorLayer);
     }
 
     private void AttachBodyPrefab(int index)

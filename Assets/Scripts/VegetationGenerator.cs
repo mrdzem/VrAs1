@@ -1,21 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class VegetationGenerator : MonoBehaviour
 {
-
-    [Serializable]
-    public struct vegetationPrefabsStruct
-    {
-        public GameObject prefab;
-        public int numObject;
-    }
-
-    [SerializeField]
-    private List<vegetationPrefabsStruct> prefabs = new List<vegetationPrefabsStruct>();
-
     public List<GameObject> vegetationPrefabs = new List<GameObject>();
 
     private List<GameObject> instances = new List<GameObject>();
@@ -30,8 +18,6 @@ public class VegetationGenerator : MonoBehaviour
 
     public bool reset = false;
 
-    
-
     // Start is called before the first frame update
     void Start()
     {
@@ -41,81 +27,31 @@ public class VegetationGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO: Exercise 1.2 -> 3.)
-        // check & handle "reset" to regenerate vegetation instances
-
-        if (reset)
+        if(reset)
         {
             reset = false;
             ClearVegetation();
             GenerateVegetation();
         }
+
     }
 
     void ClearVegetation()
     {
-        // TODO: part of Exercise 1.2 -> 3.)
-        for (int i = instances.Count; i > 0; i--)
-        {
-            GameObject toDestroy = instances[i - 1];
-            Destroy(toDestroy);
-            instances.Remove(instances[i-1]);
-        }
+        foreach (var instance in instances)
+            Destroy(instance);
+        instances.Clear();
     }
 
     void GenerateVegetation()
     {
-        // TODO: Exercise 1.2 -> 1.)
-        // Instantiate & transform random "vegetationPrefab"
-
-        // your code here
-
-        // WITHOUT BONUS //
-
-        //for (int i = 0; i < numObjects; i++)
-        //{
-        //    int randomIndex = UnityEngine.Random.Range(0, vegetationPrefabs.Count);
-
-        //    GameObject somePlant = Instantiate(vegetationPrefabs[randomIndex], this.gameObject.transform);
-
-        //    somePlant.transform.position = new Vector3(
-        //        UnityEngine.Random.Range(vegetationBoundsMin.x, vegetationBoundsMax.x),
-        //        0,
-        //        UnityEngine.Random.Range(vegetationBoundsMin.z, vegetationBoundsMax.z)
-        //    );
-        //    somePlant.transform.rotation = new Quaternion(0, UnityEngine.Random.Range(0, 360), 0, 0);
-        //    instances.Add(somePlant);
-        //}
-
-        // WITH BONUS //
-        foreach(vegetationPrefabsStruct pre in prefabs)
+        while(instances.Count < numObjects)
         {
-            for (int i = 0; i < pre.numObject; i++)
-            {
-
-                GameObject somePlant = Instantiate(
-                    pre.prefab,
-                    new Vector3(
-                        UnityEngine.Random.Range(vegetationBoundsMin.x, vegetationBoundsMax.x),
-                        0,
-                        UnityEngine.Random.Range(vegetationBoundsMin.z, vegetationBoundsMax.z)
-                    ),
-                    new Quaternion(
-                        0,
-                        UnityEngine.Random.Range(-1.0f, 1.0f),
-                        0,
-                        UnityEngine.Random.Range(-1.0f, 1.0f)
-                    ),
-                    this.gameObject.transform);
-
-                instances.Add(somePlant);
-            }
+            var instance = Instantiate(vegetationPrefabs[Random.Range(0, vegetationPrefabs.Count)]);
+            instance.transform.SetParent(gameObject.transform);
+            ApplyRandomInstanceTransform(instance);
+            instances.Add(instance);
         }
-        
-
-        // Collisions need to be resolved at a later time,
-        // because Unity physics loop (Unity-internal evaluation of collisions)
-        // runs separate from Update() loop
         StartCoroutine(ResolveCollisions());
     }
 
@@ -123,35 +59,47 @@ public class VegetationGenerator : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         bool resolveAgain = false;
-
-        // TODO: Exercise 1.2 -> 2.)
-        // check & handle bounds intersection of each instance with "restrictedBounds"
-
-        // your code here
-
-        for (int i = 0; i < instances.Count; i++)
+        foreach(var instance in instances)
         {
-            Collider instanceCollider = instances[i].GetComponent<Collider>();
-            if (IsInRestrictedBounds(instanceCollider))
+            if(IsInRestrictedBounds(instance.GetComponent<Collider>()))
             {
+                ApplyRandomInstanceTransform(instance);
                 resolveAgain = true;
-                instances[i].transform.position = new Vector3(
-                    UnityEngine.Random.Range(vegetationBoundsMin.x, vegetationBoundsMax.x),
-                    0,
-                    UnityEngine.Random.Range(vegetationBoundsMin.z, vegetationBoundsMax.z)
-                );
             }
-
         }
-        // resolve again (delayed), after new random transform applied to colliding instances
-        if (resolveAgain) StartCoroutine(ResolveCollisions());
+        if (resolveAgain)
+            StartCoroutine(ResolveCollisions());
     }
 
     bool IsInRestrictedBounds(Collider co)
     {
-        // TODO: part of Exercise 1.2-> 2.)
-        Collider HouseCollider = GameObject.Find("House").GetComponent<Collider>();
-        if (co.bounds.Intersects(HouseCollider.bounds)) return true;
+        if (co == null)
+            return false;
+        foreach(var c in restrictedBounds)
+        {
+            if (c.bounds.Intersects(co.bounds))
+                return true;
+        }
         return false;
+    }
+
+    void ApplyRandomInstanceTransform(GameObject instance)
+    {
+        instance.transform.position = CalculateRandomInstancePosition();
+        instance.transform.rotation = CalculateRandomInstanceRotation();
+    }
+
+    Vector3 CalculateRandomInstancePosition()
+    {
+        return new Vector3(
+            Random.Range(vegetationBoundsMin.x, vegetationBoundsMax.x),
+            Random.Range(vegetationBoundsMin.y, vegetationBoundsMax.y),
+            Random.Range(vegetationBoundsMin.z, vegetationBoundsMax.z)
+        );
+    }
+
+    Quaternion CalculateRandomInstanceRotation()
+    {
+        return Quaternion.Euler(0, Random.Range(-90f, 90f), 0);
     }
 }

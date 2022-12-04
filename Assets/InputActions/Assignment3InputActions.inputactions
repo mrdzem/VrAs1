@@ -1,0 +1,94 @@
+{
+    "name": "Assignment3InputActions",
+    "maps": [
+        {
+            "name": "Right XR Controller",
+            "id": "02e929a3-8b92-42bc-b7f3-ec13698c8469",
+            "actions": [
+                {
+                    "name": "JumpAction",
+                    "type": "Value",
+                    "id": "5160d896-c965-4a22-a65a-d3ef5e5ebb7f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "NavigationResetAction",
+                    "type": "Button",
+                    "id": "1dc2c06b-96bb-45fc-95da-9b43ce392980",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RecenterAction",
+                    "type": "Button",
+                    "id": "b04e3470-1e5e-4dc3-85c1-9a12ea146c94",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BrakeAction",
+                    "type": "Value",
+                    "id": "c2f2a981-6c5f-4943-8c2f-ba350aa62188",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "dea1b110-59db-4083-85ba-206a58408167",
+                    "path": "<OculusTouchController>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "JumpAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04bd1b3f-b634-4993-b7a1-aa03c345128b",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NavigationResetAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ce03791d-28bb-4586-ab2a-8cca6807fedf",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/primarybutton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RecenterAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2d92cf4e-f542-48db-97ca-34fddf5439e5",
+                    "path": "<OculusTouchController>{RightHand}/grip",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BrakeAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

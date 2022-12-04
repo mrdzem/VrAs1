@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Diagnostics;
 using UnityEngine;
 
 public class MoveAroundTarget : MonoBehaviour
@@ -9,8 +7,6 @@ public class MoveAroundTarget : MonoBehaviour
     public Transform target;
 
     public float degreesPerSecond = 20;
-
-    private float timer = 0.0f;
 
     private Vector3 targetPositionXZ
     {
@@ -39,7 +35,7 @@ public class MoveAroundTarget : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -47,26 +43,21 @@ public class MoveAroundTarget : MonoBehaviour
     {
         var newPosition = CalculatePositionUpdate();
         var newRotation = CalculateRotationUpdate(newPosition);
-        
         transform.position = newPosition;
         transform.rotation = newRotation;
     }
 
     Vector3 CalculatePositionUpdate()
     {
-        // TODO: Exercise 1.5
-
-        timer += Time.deltaTime;
-        Vector3 returnPosition = new Vector3(target.position.x + Mathf.Cos(timer / 60 * degreesPerSecond), 0, target.position.z + Mathf.Sin(timer / 60 * degreesPerSecond));
-        return returnPosition;
-
-       
+        var y = transform.position.y;
+        var newPosition = targetPositionXZ - RotationUtils.ManualYRotation(directionToTarget, degreesPerSecond * Time.deltaTime);
+        newPosition.y = y;
+        return newPosition;
     }
 
     Quaternion CalculateRotationUpdate(Vector3 newPosition)
     {
-        // TODO: Exercise 1.5
-
-        return Quaternion.LookRotation(newPosition - transform.position, Vector3.up);
+        var movementDir = newPosition - transform.position;
+        return Quaternion.LookRotation(movementDir.normalized, Vector3.up);
     }
 }

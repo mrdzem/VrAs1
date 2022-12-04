@@ -1,0 +1,34 @@
+{
+    "name": "Assignment2InputActions",
+    "maps": [
+        {
+            "name": "Right XR Controller",
+            "id": "06047648-2ea4-4869-b60c-368ae5a4b875",
+            "actions": [
+                {
+                    "name": "FlyAction",
+                    "type": "Value",
+                    "id": "edf6ea88-f2ea-4330-9971-7c9332c5aa44",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f4ae65bc-5c6c-49e6-89ef-f13851b2e8db",
+                    "path": "<XRController>{RightHand}/triggerButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FlyAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
