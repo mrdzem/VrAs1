@@ -38,6 +38,7 @@ public class JumpingNavigation : MonoBehaviour
     private LineRenderer debugOffsetRenderer;
 
     public LayerMask myLayerMask;
+    public LayerMask jumpingLayerMask;
 
     public float rayActivationThreshhold = 0.01f;
     public float jumpActivationThreshhold = 0.9f;
@@ -84,6 +85,28 @@ public class JumpingNavigation : MonoBehaviour
         }
 
         // Task 3.3 TODO
+        if(rayActivationThreshhold < jumpActionValue && jumpActivationThreshhold > jumpActionValue)
+        {
+            previewHitpoint.SetActive(true);
+            Physics.Raycast(rightController.transform.position, rightController.transform.forward, out hit, Mathf.Infinity ,jumpingLayerMask);
+            previewHitpoint.transform.position = hit.point;
+            jumpingTargetPosition = hit.point;
+        }
+        else if(jumpActivationThreshhold < jumpActionValue)
+        {
+            Physics.Raycast(rightController.transform.position, rightController.transform.forward, out hit, Mathf.Infinity, jumpingLayerMask);
+            previewAvatar.SetActive(true);
+            previewAvatar.transform.position = jumpingTargetPosition + new Vector3(0,1,0);
+            Vector3 targetPos = hit.point;
+            targetPos.y = previewAvatar.transform.position.y;
+            Vector3 targetPosDirection = previewAvatar.transform.position - targetPos;
+            previewAvatar.transform.rotation = Quaternion.LookRotation(targetPosDirection, Vector3.up);
+        }
+        else
+        {
+            previewHitpoint.SetActive(false);
+            previewAvatar.SetActive(false);
+        }
         
 
 
