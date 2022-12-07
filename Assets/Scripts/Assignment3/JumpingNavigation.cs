@@ -96,16 +96,22 @@ public class JumpingNavigation : MonoBehaviour
         {
             Physics.Raycast(rightController.transform.position, rightController.transform.forward, out hit, Mathf.Infinity, jumpingLayerMask);
             previewAvatar.SetActive(true);
-            previewAvatar.transform.position = jumpingTargetPosition + new Vector3(0,1,0);
+            previewAvatar.transform.position = new Vector3(jumpingTargetPosition.x, xrUserCamera.transform.position.y, jumpingTargetPosition.z);
             Vector3 targetPos = hit.point;
             targetPos.y = previewAvatar.transform.position.y;
             Vector3 targetPosDirection = previewAvatar.transform.position - targetPos;
             previewAvatar.transform.rotation = Quaternion.LookRotation(targetPosDirection, Vector3.up);
         }
-        else
+        else 
         {
-            previewHitpoint.SetActive(false);
-            previewAvatar.SetActive(false);
+            if (previewAvatar.activeSelf)
+            {
+                
+                previewHitpoint.SetActive(false);
+                previewAvatar.SetActive(false);
+                PerformJump();
+            }
+            
         }
         
 
@@ -121,10 +127,27 @@ public class JumpingNavigation : MonoBehaviour
     private void PerformJump()
     {
         // Task 3.3 TODO
-        
+
+        Matrix4x4 headMat = Matrix4x4.TRS(
+            xrUserCamera.transform.localPosition,
+            Quaternion.Euler(0, xrUserCamera.transform.localRotation.eulerAngles.y, 0), 
+            xrUserCamera.transform.localScale
+        );
+        Matrix4x4 prevMat = Matrix4x4.TRS(
+            previewAvatar.transform.position,
+            Quaternion.Euler(0, previewAvatar.transform.rotation.eulerAngles.y-180, 0), 
+            previewAvatar.transform.localScale
+        );
+
+        Matrix4x4 outMat = prevMat * headMat.inverse;
+
+        transform.position = outMat.GetColumn(3);
+        transform.rotation = outMat.rotation;
+
 
         jumpPerformed.Invoke();
     }
+
 
     private GameObject InitPreviewHitpoint()
     {

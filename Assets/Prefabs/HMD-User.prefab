@@ -1444,6 +1444,9 @@ MonoBehaviour:
   myLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  jumpingLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   rayActivationThreshhold: 0.01
   jumpActivationThreshhold: 0.9
   jumpPerformed:
