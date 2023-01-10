@@ -1,0 +1,34 @@
+{
+    "name": "Assignment4InputActions",
+    "maps": [
+        {
+            "name": "Right XR Controller",
+            "id": "890d6115-1c4c-433e-a335-fbe0a4993344",
+            "actions": [
+                {
+                    "name": "SwitchMode",
+                    "type": "Button",
+                    "id": "b8ddeb1a-8913-4065-9b72-bd13c152e6a4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d3aaeaee-760e-4ba1-9b97-15307b15d8a0",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

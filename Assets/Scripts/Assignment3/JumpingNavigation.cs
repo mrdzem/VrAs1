@@ -7,22 +7,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class JumpingNavigation : MonoBehaviour
 {
-    public enum JumpingState
-    {
-        Idle,
-        ShowRay,
-        TargetSet,
-        PerformJump
-    }
-
     public InputActionProperty jumpAction;
     public InputActionProperty resetAction;
 
     public GameObject previewAvatarPrefab;
     public Material previewMaterial;
 
-    private JumpingState currentState = JumpingState.Idle;
     private bool rayIsActive = false;
+    private bool jumpIsActive = false;
     private GameObject rightController;
     private GameObject xrUserCamera;
     private GameObject previewHitpoint;
@@ -35,10 +27,9 @@ public class JumpingNavigation : MonoBehaviour
     private Vector3 currentHitPosition;
     private Vector3 jumpingTargetPosition;
 
-    private LineRenderer debugOffsetRenderer;
+    private LineRenderer offsetRenderer;
 
     public LayerMask myLayerMask;
-    public LayerMask jumpingLayerMask;
 
     public float rayActivationThreshhold = 0.01f;
     public float jumpActivationThreshhold = 0.9f;
@@ -52,14 +43,21 @@ public class JumpingNavigation : MonoBehaviour
         previewHitpoint = InitPreviewHitpoint();
         previewAvatar = Instantiate(previewAvatarPrefab, Vector3.zero, Quaternion.identity);
         previewAvatar.SetActive(false);
-        lineVisual = rightController.GetComponent<XRInteractorLineVisual>();
+        lineVisual = GameObject.Find("RightHand Controller").GetComponent<XRInteractorLineVisual>();
 
-        SetupDebugOffsetRenderer();
+        if (offsetRenderer == null)
+        {
+            offsetRenderer = this.gameObject.GetComponent<LineRenderer>();
+            if (offsetRenderer == null)
+            {
+                offsetRenderer = this.gameObject.AddComponent<LineRenderer>();
+            }
+        }
+        offsetRenderer.startWidth = 0.01f;
+        offsetRenderer.positionCount = 2;
 
         startPosition = this.transform.position;
         startRotation = this.transform.rotation;
-        
-        currentState = JumpingState.Idle;
     }
 
     // Start is called before the first frame update
@@ -71,50 +69,69 @@ public class JumpingNavigation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DebugUpdateOffsetToCenter(); // This helper function visualizes 
+        UpdateOffsetToCenter();
 
         float jumpActionValue = jumpAction.action.ReadValue<float>();
-        if (jumpActionValue > rayActivationThreshhold && currentState == JumpingState.Idle)
+        if (jumpActionValue > rayActivationThreshhold && !rayIsActive)
         {
-            currentState = JumpingState.ShowRay;
-            lineVisual.enabled = true;
-        } else if (jumpActionValue < rayActivationThreshhold && currentState == JumpingState.ShowRay)
+            rayIsActive = true;
+            lineVisual.enabled = rayIsActive;
+        } else if (jumpActionValue < rayActivationThreshhold && rayIsActive)
         {
-            currentState = JumpingState.Idle;
-            lineVisual.enabled = false;
+            rayIsActive = false;
+            lineVisual.enabled = rayIsActive;
         }
 
-        // Task 3.3 TODO
-        if(rayActivationThreshhold < jumpActionValue && jumpActivationThreshhold > jumpActionValue)
+        if (rayIsActive)
         {
-            previewHitpoint.SetActive(true);
-            Physics.Raycast(rightController.transform.position, rightController.transform.forward, out hit, Mathf.Infinity ,jumpingLayerMask);
-            previewHitpoint.transform.position = hit.point;
-            jumpingTargetPosition = hit.point;
-        }
-        else if(jumpActivationThreshhold < jumpActionValue)
-        {
-            Physics.Raycast(rightController.transform.position, rightController.transform.forward, out hit, Mathf.Infinity, jumpingLayerMask);
-            previewAvatar.SetActive(true);
-            previewAvatar.transform.position = new Vector3(jumpingTargetPosition.x, xrUserCamera.transform.position.y, jumpingTargetPosition.z);
-            Vector3 targetPos = hit.point;
-            targetPos.y = previewAvatar.transform.position.y;
-            Vector3 targetPosDirection = previewAvatar.transform.position - targetPos;
-            previewAvatar.transform.rotation = Quaternion.LookRotation(targetPosDirection, Vector3.up);
-        }
-        else 
-        {
-            if (previewAvatar.activeSelf)
+            Vector3 controllerPos = rightController.transform.position;
+            Vector3 controllerDir = rightController.transform.TransformDirection(Vector3.forward) * 10;
+            if (Physics.Raycast(controllerPos, controllerDir, out hit, Mathf.Infinity, myLayerMask))
             {
+                currentHitPosition = hit.point;
                 
-                previewHitpoint.SetActive(false);
-                previewAvatar.SetActive(false);
-                PerformJump();
-            }
-            
-        }
-        
+                // jump action triggered -> show avatar
+                if (jumpActionValue > jumpActivationThreshhold && !jumpIsActive) 
+                {
+                    jumpIsActive = true;
+                    SetJumpingTarget(currentHitPosition);
 
+                    ShowHitpoint(currentHitPosition);
+                    // Show Avatar
+                    float userHeight = xrUserCamera.transform.position.y - this.transform.position.y;
+                    Quaternion avatarOrientation = Quaternion.LookRotation(xrUserCamera.transform.position - new Vector3(currentHitPosition.x, xrUserCamera.transform.position.y, currentHitPosition.z));
+                    ShowAvatar(currentHitPosition + new Vector3(0, userHeight, 0), avatarOrientation);
+                } else if (jumpIsActive) // jump action active -> update
+                {
+                    // Update Avatar
+                    float userHeight = xrUserCamera.transform.position.y - this.transform.position.y;
+                    Vector3 previewAvatarPosition = new Vector3(previewAvatar.transform.position.x, currentHitPosition.y + userHeight, previewAvatar.transform.position.z);
+                    Quaternion avatarOrientation = Quaternion.LookRotation(previewAvatar.transform.position - new Vector3(currentHitPosition.x, previewAvatar.transform.position.y, currentHitPosition.z));
+                    ShowAvatar(previewAvatarPosition, avatarOrientation);
+                } else
+                {
+                    ShowHitpoint(currentHitPosition);
+                }
+            } else
+            {
+                HideHitpoint();
+                HideAvatar();
+            }
+        } else
+        {
+            HideHitpoint();
+            HideAvatar();
+        }
+
+        // jump action triggered and released -> perform jump
+        if (jumpIsActive && jumpActionValue < jumpActivationThreshhold) 
+        {
+            PerformJump();
+            jumpIsActive = false;
+
+            HideHitpoint();
+            HideAvatar();
+        }
 
         if (resetAction.action.WasPressedThisFrame())
         {
@@ -122,32 +139,58 @@ public class JumpingNavigation : MonoBehaviour
         }
     }
 
+    private void UpdateOffsetToCenter()
+    {
+        // Calculate the offset between the platform center and the camera in the xz plane
+        Vector3 a = this.transform.position;
+        Vector3 b = new Vector3(xrUserCamera.transform.position.x, this.transform.position.y, xrUserCamera.transform.position.z);
 
+        // visualize the offset as a line on the ground
+        offsetRenderer.positionCount = 2; // line renderer visualizes a line between N vertices (here 2 vertices)
+        offsetRenderer.SetPosition(0, a); // set pos 1
+        offsetRenderer.SetPosition(1, b); // set pos 2
+    }
 
     private void PerformJump()
     {
-        // Task 3.3 TODO
+        // Matrix Solution
+        Quaternion goalOrientation = Quaternion.LookRotation(new Vector3(currentHitPosition.x, previewAvatar.transform.position.y, currentHitPosition.z) - previewAvatar.transform.position);
+        Vector3 goalRotY = new Vector3(0f, goalOrientation.eulerAngles.y, 0f);
+        Matrix4x4 goalMat = Matrix4x4.TRS(jumpingTargetPosition, Quaternion.Euler(goalRotY), new Vector3(1, 1, 1));
 
-        Matrix4x4 headMat = Matrix4x4.TRS(
-            xrUserCamera.transform.localPosition,
-            Quaternion.Euler(0, xrUserCamera.transform.localRotation.eulerAngles.y, 0), 
-            xrUserCamera.transform.localScale
-        );
-        Matrix4x4 prevMat = Matrix4x4.TRS(
-            previewAvatar.transform.position,
-            Quaternion.Euler(0, previewAvatar.transform.rotation.eulerAngles.y-180, 0), 
-            previewAvatar.transform.localScale
-        );
-
-        Matrix4x4 outMat = prevMat * headMat.inverse;
-
-        transform.position = outMat.GetColumn(3);
-        transform.rotation = outMat.rotation;
-
+        Vector3 headYRot = new Vector3(0f, xrUserCamera.transform.localRotation.eulerAngles.y, 0f);
+        Vector3 headXZPos = new Vector3(xrUserCamera.transform.localPosition.x, 0f, xrUserCamera.transform.localPosition.z);
+        Matrix4x4 headMat = Matrix4x4.TRS(headXZPos, Quaternion.Euler(headYRot), new Vector3(1, 1, 1));
+        Matrix4x4 newMat = goalMat * Matrix4x4.Inverse(headMat);
+        transform.position = newMat.GetColumn(3);
+        transform.rotation = newMat.rotation;
+        transform.localScale = newMat.lossyScale;
 
         jumpPerformed.Invoke();
+
+        // Calculate required turn angle
+        //Quaternion camLocalRot = xrUserCamera.transform.localRotation;
+        //Quaternion platformLocalRot = transform.localRotation;
+        //Quaternion avatarOrientation = Quaternion.LookRotation(new Vector3(currentHitPosition.x, previewAvatar.transform.position.y, currentHitPosition.z) - previewAvatar.transform.position);
+        //float goalAngle = avatarOrientation.eulerAngles.y;
+        //float turnAngle = goalAngle - (camLocalRot.eulerAngles.y + platformLocalRot.eulerAngles.y);
+
+        //// Rotate platform
+        //transform.Rotate(0f, turnAngle, 0f);
+
+        //// Adjust offset to new platform orientation
+        //Vector3 a = this.transform.position;
+        //Vector3 b = new Vector3(xrUserCamera.transform.position.x, this.transform.position.y, xrUserCamera.transform.position.z);
+        //centerOffset = b - a;
+
+        //// jump to new position and apply offset
+        //transform.position = jumpingTargetPosition - centerOffset;
     }
 
+    private void SetJumpingTarget(Vector3 targetPos)
+    {
+        jumpingTargetPosition = targetPos;
+    }
 
     private GameObject InitPreviewHitpoint()
     {
@@ -158,35 +201,28 @@ public class JumpingNavigation : MonoBehaviour
         return hitpoint;
     }
 
-    private void SetupDebugOffsetRenderer()
+    private void ShowHitpoint(Vector3 worldPos)
     {
-        // Render a line between your platform origin and your camera position (projected to the XZ plane)
-        if (debugOffsetRenderer == null)
-        {
-            debugOffsetRenderer = this.gameObject.GetComponent<LineRenderer>();
-            if (debugOffsetRenderer == null)
-            {
-                debugOffsetRenderer = this.gameObject.AddComponent<LineRenderer>();
-            }
-        }
-        debugOffsetRenderer.startWidth = 0.01f;
-        debugOffsetRenderer.positionCount = 2;
+        previewHitpoint.SetActive(true); // show
+        previewHitpoint.transform.position = worldPos;   
     }
 
-    private void DebugUpdateOffsetToCenter()
+    private void HideHitpoint()
     {
-        // Calculate the offset between the platform center and the camera in the xz plane
-        Vector3 a = this.transform.position;
-        Vector3 b = new Vector3(xrUserCamera.transform.position.x, this.transform.position.y, xrUserCamera.transform.position.z);
-
-        // visualize the offset as a line on the ground
-        debugOffsetRenderer.positionCount = 2; // line renderer visualizes a line between N vertices (here 2 vertices)
-        debugOffsetRenderer.SetPosition(0, a); // set pos 1
-        debugOffsetRenderer.SetPosition(1, b); // set pos 2
+        previewHitpoint.SetActive(false); // hide
     }
 
-    // Task 3.3 TODO
-    
+    private void ShowAvatar(Vector3 worldPos, Quaternion worldRot)
+    {
+        previewAvatar.SetActive(true); // show
+        previewAvatar.transform.position = worldPos;
+        previewAvatar.transform.rotation = worldRot;
+    }
+
+    private void HideAvatar()
+    {
+        previewAvatar.SetActive(false); // hide
+    }
 
     private void ResetXROrigin()
     {
