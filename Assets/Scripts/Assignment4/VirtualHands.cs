@@ -23,7 +23,8 @@ public class VirtualHands : MonoBehaviour
     private GameObject rightGrabbedObject;
     private GameObject leftGrabbedObject;
 
-    Transform savedParentTransform;
+    private Transform savedRightParentTransform;
+    private Transform savedLeftParentTransform;
 
     private Matrix4x4 rightOffsetMat; // <-- Hint
     private Matrix4x4 leftOffsetMat; // <-- Hint
@@ -80,14 +81,14 @@ public class VirtualHands : MonoBehaviour
     public void ReparentingGrab()
     {
         // TODO: Excercise 4.2
-        
+
         if (rightHandGrab.action.IsPressed())
         {
             if (rightGrabbedObject == null && rightHandCollider.isColliding &&
                 rightHandCollider.collidingObject != leftGrabbedObject)
             {
                 rightGrabbedObject = rightHandCollider.collidingObject;
-                savedParentTransform = rightGrabbedObject.transform.parent;
+                savedRightParentTransform = rightGrabbedObject.transform.parent;
                 rightGrabbedObject.transform.SetParent(rightHandCollider.transform, true);
 
             }
@@ -95,8 +96,26 @@ public class VirtualHands : MonoBehaviour
         }
         else if (rightHandGrab.action.WasReleasedThisFrame() && rightGrabbedObject != null)
         {
-            rightGrabbedObject.transform.SetParent(savedParentTransform, true);
+            rightGrabbedObject.transform.SetParent(savedRightParentTransform, true);
             rightGrabbedObject = null;
+        }
+
+        if (leftHandGrab.action.IsPressed())
+        {
+            if (leftGrabbedObject == null && leftHandCollider.isColliding &&
+                leftHandCollider.collidingObject != rightGrabbedObject)
+            {
+                leftGrabbedObject = leftHandCollider.collidingObject;
+                savedLeftParentTransform = leftGrabbedObject.transform.parent;
+                leftGrabbedObject.transform.SetParent(leftHandCollider.transform, true);
+
+            }
+
+        }
+        else if (leftHandGrab.action.WasReleasedThisFrame() && leftGrabbedObject != null)
+        {
+            leftGrabbedObject.transform.SetParent(savedLeftParentTransform, true);
+            leftGrabbedObject = null;
         }
     }
 
@@ -140,6 +159,45 @@ public class VirtualHands : MonoBehaviour
         else if (rightHandGrab.action.WasReleasedThisFrame())
         {
             rightGrabbedObject = null;
+        }
+
+
+
+
+        if (leftHandGrab.action.IsPressed())
+        {
+            if (leftGrabbedObject == null && leftHandCollider.isColliding &&
+                leftHandCollider.collidingObject != rightGrabbedObject)
+            {
+                leftGrabbedObject = leftHandCollider.collidingObject;
+                leftOffsetMat =
+                    Matrix4x4.TRS(
+                        leftHandCollider.transform.position,
+                        leftHandCollider.transform.rotation,
+                        leftHandCollider.transform.localScale
+                    ).inverse
+                    *
+                    Matrix4x4.TRS(
+                        leftGrabbedObject.transform.position,
+                        leftGrabbedObject.transform.rotation,
+                        leftGrabbedObject.transform.localScale
+                    );
+            }
+            else if (leftGrabbedObject != null)
+            {
+                Matrix4x4 leftHandColliderMat = Matrix4x4.TRS(
+                    leftHandCollider.transform.position,
+                    leftHandCollider.transform.rotation,
+                    leftHandCollider.transform.localScale
+                );
+
+                leftGrabbedObject.transform.position = (leftHandColliderMat * leftOffsetMat).GetColumn(3);
+                leftGrabbedObject.transform.rotation = (leftHandColliderMat * leftOffsetMat).rotation;
+            }
+        }
+        else if (leftHandGrab.action.WasReleasedThisFrame())
+        {
+            leftGrabbedObject = null;
         }
     }
 

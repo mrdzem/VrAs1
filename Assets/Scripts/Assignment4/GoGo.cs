@@ -15,7 +15,8 @@ public class GoGo : MonoBehaviour
     public Transform leftController;
     public Transform leftHandMesh;
 
-    private Transform savedParentTransform;
+    private Transform savedRightParentTransform;
+    private Transform savedLeftParentTransform;
 
     [Header("Input Actions")]
     public InputActionProperty rightHandGrab;
@@ -52,29 +53,54 @@ public class GoGo : MonoBehaviour
         // TODO Excercise 4.3
         // hand movement calculation
         //float distance = Vector3.Distance(rightController.position, head.position);
-        float newDistance;
-        Vector3 handRelativeTohead =  rightController.position - head.position;
-        Vector3 direction = handRelativeTohead.normalized;
-        float distance = handRelativeTohead.magnitude;
-        float k = (maxDistance - maxReachDistance) / Mathf.Pow(maxReachDistance - activationOffset, 2);
-        if (distance < activationOffset)
+        float newRightDistance;
+        Vector3 rightHandRelativeTohead = rightController.position - head.position;
+        Vector3 rightDirection = rightHandRelativeTohead.normalized;
+        float rightDistance = rightHandRelativeTohead.magnitude;
+        float rightK = (maxDistance - maxReachDistance) / Mathf.Pow(maxReachDistance - activationOffset, 2);
+
+        float newLeftDistance;
+        Vector3 leftHandRelativeTohead = leftController.position - head.position;
+        Vector3 leftDirection = leftHandRelativeTohead.normalized;
+        float leftDistance = leftHandRelativeTohead.magnitude;
+        float leftK = (maxDistance - maxReachDistance) / Mathf.Pow(maxReachDistance - activationOffset, 2);
+
+
+        if (rightDistance < activationOffset)
         {
-            newDistance = distance;
+            newRightDistance = rightDistance;
             
         }
         else
         {
-            newDistance = distance + k * Mathf.Pow((distance - activationOffset),2);  
+            newRightDistance = rightDistance + rightK * Mathf.Pow((rightDistance - activationOffset),2);  
         }
         rightHandMesh.position = 
             new Vector3(
-                head.position.x + direction.x * newDistance,
-                head.position.y + direction.y * newDistance,
-                head.position.z + direction.z * newDistance
+                head.position.x + rightDirection.x * newRightDistance,
+                head.position.y + rightDirection.y * newRightDistance,
+                head.position.z + rightDirection.z * newRightDistance
             );
 
-        Debug.Log(Vector3.Distance(head.position , rightHandMesh.position));
-        
+
+
+        if (leftDistance < activationOffset)
+        {
+            newLeftDistance = leftDistance;
+
+        }
+        else
+        {
+            newLeftDistance = leftDistance + leftK * Mathf.Pow((leftDistance - activationOffset), 2);
+        }
+        leftHandMesh.position =
+            new Vector3(
+                head.position.x + leftDirection.x * newLeftDistance,
+                head.position.y + leftDirection.y * newLeftDistance,
+                head.position.z + leftDirection.z * newLeftDistance
+            );
+
+
     }
 
     public void UpdateGrab()
@@ -87,7 +113,7 @@ public class GoGo : MonoBehaviour
                 rightHandCollider.collidingObject != leftGrabbedObject)
             {
                 rightGrabbedObject = rightHandCollider.collidingObject;
-                savedParentTransform = rightGrabbedObject.transform.parent;
+                savedRightParentTransform = rightGrabbedObject.transform.parent;
                 rightGrabbedObject.transform.SetParent(rightHandCollider.transform, true);
 
             }
@@ -95,8 +121,26 @@ public class GoGo : MonoBehaviour
         }
         else if (rightHandGrab.action.WasReleasedThisFrame() && rightGrabbedObject != null)
         {
-            rightGrabbedObject.transform.SetParent(savedParentTransform, true);
+            rightGrabbedObject.transform.SetParent(savedRightParentTransform, true);
             rightGrabbedObject = null;
+        }
+
+        if (leftHandGrab.action.IsPressed())
+        {
+            if (leftGrabbedObject == null && leftHandCollider.isColliding &&
+                leftHandCollider.collidingObject != rightGrabbedObject)
+            {
+                leftGrabbedObject = leftHandCollider.collidingObject;
+                savedLeftParentTransform = leftGrabbedObject.transform.parent;
+                leftGrabbedObject.transform.SetParent(leftHandCollider.transform, true);
+
+            }
+
+        }
+        else if (leftHandGrab.action.WasReleasedThisFrame() && leftGrabbedObject != null)
+        {
+            leftGrabbedObject.transform.SetParent(savedLeftParentTransform, true);
+            leftGrabbedObject = null;
         }
     }
 
