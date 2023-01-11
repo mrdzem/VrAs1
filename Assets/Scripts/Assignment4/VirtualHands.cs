@@ -23,6 +23,8 @@ public class VirtualHands : MonoBehaviour
     private GameObject rightGrabbedObject;
     private GameObject leftGrabbedObject;
 
+    Transform savedParentTransform;
+
     private Matrix4x4 rightOffsetMat; // <-- Hint
     private Matrix4x4 leftOffsetMat; // <-- Hint
     
@@ -72,12 +74,33 @@ public class VirtualHands : MonoBehaviour
         {
             rightGrabbedObject = null;
         }
+        
     }
 
     public void ReparentingGrab()
     {
         // TODO: Excercise 4.2
+        
+        if (rightHandGrab.action.IsPressed())
+        {
+            if (rightGrabbedObject == null && rightHandCollider.isColliding &&
+                rightHandCollider.collidingObject != leftGrabbedObject)
+            {
+                rightGrabbedObject = rightHandCollider.collidingObject;
+                savedParentTransform = rightGrabbedObject.transform.parent;
+                rightGrabbedObject.transform.SetParent(rightHandCollider.transform, true);
+
+            }
+
+        }
+        else if (rightHandGrab.action.WasReleasedThisFrame() && rightGrabbedObject != null)
+        {
+            rightGrabbedObject.transform.SetParent(savedParentTransform, true);
+            rightGrabbedObject = null;
+        }
     }
+
+
 
     public void GrabCalculation()
     {
@@ -97,8 +120,8 @@ public class VirtualHands : MonoBehaviour
                     ).inverse 
                     *  
                     Matrix4x4.TRS(
-                        rightGrabbedObject.transform.localPosition,
-                        rightGrabbedObject.transform.localRotation,
+                        rightGrabbedObject.transform.position,
+                        rightGrabbedObject.transform.rotation,
                         rightGrabbedObject.transform.localScale
                     );
             }
