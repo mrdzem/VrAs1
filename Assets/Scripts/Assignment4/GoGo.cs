@@ -49,6 +49,19 @@ public class GoGo : MonoBehaviour
     {
         // TODO Excercise 4.3
         // hand movement calculation
+        float distance = Vector3.Distance(rightController.position, head.position);
+        float newDistance;
+        if(distance < activationOffset)
+        {
+            newDistance = distance;
+            
+        }
+        else
+        {
+            newDistance = distance + 20* Mathf.Pow((distance - activationOffset),2);
+            
+        }
+        Debug.Log(newDistance);
     }
 
     public void UpdateGrab()
