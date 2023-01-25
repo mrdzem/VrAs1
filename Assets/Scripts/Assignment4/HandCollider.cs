@@ -21,6 +21,7 @@ public class HandCollider : MonoBehaviour
         {
             isColliding = true;
             collidingObject = other.gameObject;
+            collidingObject.GetComponent<MaterialHandler>().Hover(true);
         }
     }
 
@@ -28,6 +29,7 @@ public class HandCollider : MonoBehaviour
     {
         if (isColliding && other.gameObject == collidingObject)
         {
+            collidingObject.GetComponent<MaterialHandler>().Hover(false);
             isColliding = false;
             collidingObject = null;
         }

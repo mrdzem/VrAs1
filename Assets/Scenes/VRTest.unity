@@ -10486,7 +10486,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6314194229017634134, guid: 1431af1816c916149b76ef188be80109, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6314194229017634135, guid: 1431af1816c916149b76ef188be80109, type: 3}
       propertyPath: reparent
@@ -10494,7 +10494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6314194229017634135, guid: 1431af1816c916149b76ef188be80109, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6314194229017634132, guid: 1431af1816c916149b76ef188be80109, type: 3}

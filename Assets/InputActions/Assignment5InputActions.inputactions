@@ -1,0 +1,82 @@
+{
+    "name": "Assignment5InputActions",
+    "maps": [
+        {
+            "name": "XR Right Hand",
+            "id": "446d1c5f-c923-4ba6-804f-c02024720de7",
+            "actions": [
+                {
+                    "name": "Pointing",
+                    "type": "Button",
+                    "id": "1ceb50c2-a71d-4734-b137-93b0bf6623e8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LightSwitch",
+                    "type": "Button",
+                    "id": "5779e7e4-af13-405c-96d7-9b079d63e9bb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "38a1bc3c-a863-4629-a776-6e3651bfa8a7",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pointing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd8fa640-317c-4af9-920b-1cffaa541354",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LightSwitch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "XR Left Hand",
+            "id": "38d6f83d-4a49-41f4-aed9-9ac268c1f4cf",
+            "actions": [
+                {
+                    "name": "Pointing",
+                    "type": "Button",
+                    "id": "f2ebc0f3-95dc-4d5b-a30c-258dc71e3468",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "22f832b6-00cc-4192-bfaa-91a3063a087a",
+                    "path": "<XRController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pointing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -23,13 +23,8 @@ public class VirtualHands : MonoBehaviour
     private GameObject rightGrabbedObject;
     private GameObject leftGrabbedObject;
 
-    private Transform savedRightParentTransform;
-    private Transform savedLeftParentTransform;
-
-    private Matrix4x4 rightOffsetMat; // <-- Hint
-    private Matrix4x4 leftOffsetMat; // <-- Hint
-    
-    // Hint: you can use these matrices to store your offsets for GrabCalculation()
+    private Matrix4x4 rightOffsetMat;
+    private Matrix4x4 leftOffsetMat;
 
     #endregion
 
@@ -39,9 +34,10 @@ public class VirtualHands : MonoBehaviour
     {
         if (switchMode.action.WasPressedThisFrame())
             reparent = !reparent;
-
-        // SnapGrab(); // comment out when implementing your solutions
         
+        SnapGrab(); // comment out when implementing your solutions
+        
+        /*
         if (reparent)
         {
             ReparentingGrab();
@@ -50,6 +46,8 @@ public class VirtualHands : MonoBehaviour
         {
             GrabCalculation();
         }
+        */
+        
     }
 
     #endregion
@@ -75,140 +73,107 @@ public class VirtualHands : MonoBehaviour
         {
             rightGrabbedObject = null;
         }
-        
     }
 
     public void ReparentingGrab()
     {
-        // TODO: Excercise 4.2
-
-        if (rightHandGrab.action.IsPressed())
+        if (rightHandGrab.action.WasPressedThisFrame())
         {
-            if (rightGrabbedObject == null && rightHandCollider.isColliding &&
-                rightHandCollider.collidingObject != leftGrabbedObject)
+            if (rightGrabbedObject == null && rightHandCollider.isColliding && rightHandCollider.collidingObject != leftGrabbedObject)
             {
                 rightGrabbedObject = rightHandCollider.collidingObject;
-                savedRightParentTransform = rightGrabbedObject.transform.parent;
                 rightGrabbedObject.transform.SetParent(rightHandCollider.transform, true);
-
-            }
-
-        }
-        else if (rightHandGrab.action.WasReleasedThisFrame() && rightGrabbedObject != null)
-        {
-            rightGrabbedObject.transform.SetParent(savedRightParentTransform, true);
-            rightGrabbedObject = null;
-        }
-
-        if (leftHandGrab.action.IsPressed())
-        {
-            if (leftGrabbedObject == null && leftHandCollider.isColliding &&
-                leftHandCollider.collidingObject != rightGrabbedObject)
-            {
-                leftGrabbedObject = leftHandCollider.collidingObject;
-                savedLeftParentTransform = leftGrabbedObject.transform.parent;
-                leftGrabbedObject.transform.SetParent(leftHandCollider.transform, true);
-
-            }
-
-        }
-        else if (leftHandGrab.action.WasReleasedThisFrame() && leftGrabbedObject != null)
-        {
-            leftGrabbedObject.transform.SetParent(savedLeftParentTransform, true);
-            leftGrabbedObject = null;
-        }
-    }
-
-
-
-    public void GrabCalculation()
-    {
-        // TODO: Excercise 4.2
-
-        if (rightHandGrab.action.IsPressed())
-        {
-            if (rightGrabbedObject == null && rightHandCollider.isColliding &&
-                rightHandCollider.collidingObject != leftGrabbedObject)
-            {
-                rightGrabbedObject = rightHandCollider.collidingObject;
-                rightOffsetMat = 
-                    Matrix4x4.TRS(
-                        rightHandCollider.transform.position,
-                        rightHandCollider.transform.rotation,
-                        rightHandCollider.transform.localScale
-                    ).inverse 
-                    *  
-                    Matrix4x4.TRS(
-                        rightGrabbedObject.transform.position,
-                        rightGrabbedObject.transform.rotation,
-                        rightGrabbedObject.transform.localScale
-                    );
-            }
-            else if (rightGrabbedObject != null)
-            {
-                Matrix4x4 rightHandColliderMat = Matrix4x4.TRS(
-                    rightHandCollider.transform.position,
-                    rightHandCollider.transform.rotation,
-                    rightHandCollider.transform.localScale
-                );
-
-                rightGrabbedObject.transform.position = (rightHandColliderMat * rightOffsetMat).GetColumn(3);
-                rightGrabbedObject.transform.rotation = (rightHandColliderMat * rightOffsetMat).rotation;
+                rightGrabbedObject.GetComponent<MaterialHandler>().Grab(true);
             }
         }
         else if (rightHandGrab.action.WasReleasedThisFrame())
         {
-            rightGrabbedObject = null;
+            if (rightGrabbedObject != null)
+            {
+                rightGrabbedObject.GetComponent<MaterialHandler>().Grab(false);
+                rightGrabbedObject.transform.SetParent(null, true);
+                rightGrabbedObject = null;
+            }
         }
 
-
-
-
-        if (leftHandGrab.action.IsPressed())
+        if (leftHandGrab.action.WasPressedThisFrame())
         {
             if (leftGrabbedObject == null && leftHandCollider.isColliding &&
                 leftHandCollider.collidingObject != rightGrabbedObject)
             {
                 leftGrabbedObject = leftHandCollider.collidingObject;
-                leftOffsetMat =
-                    Matrix4x4.TRS(
-                        leftHandCollider.transform.position,
-                        leftHandCollider.transform.rotation,
-                        leftHandCollider.transform.localScale
-                    ).inverse
-                    *
-                    Matrix4x4.TRS(
-                        leftGrabbedObject.transform.position,
-                        leftGrabbedObject.transform.rotation,
-                        leftGrabbedObject.transform.localScale
-                    );
-            }
-            else if (leftGrabbedObject != null)
-            {
-                Matrix4x4 leftHandColliderMat = Matrix4x4.TRS(
-                    leftHandCollider.transform.position,
-                    leftHandCollider.transform.rotation,
-                    leftHandCollider.transform.localScale
-                );
-
-                leftGrabbedObject.transform.position = (leftHandColliderMat * leftOffsetMat).GetColumn(3);
-                leftGrabbedObject.transform.rotation = (leftHandColliderMat * leftOffsetMat).rotation;
+                leftGrabbedObject.transform.SetParent(leftHandCollider.transform, true);
+                leftGrabbedObject.GetComponent<MaterialHandler>().Grab(true);
             }
         }
         else if (leftHandGrab.action.WasReleasedThisFrame())
         {
-            leftGrabbedObject = null;
+            if (leftGrabbedObject != null)
+            {
+                leftGrabbedObject.GetComponent<MaterialHandler>().Grab(false);
+                leftGrabbedObject.transform.SetParent(null, true);
+                leftGrabbedObject = null;
+            }
         }
     }
 
-    
-    /// <summary>
-    /// Returns TRS-Matrix for t
-    /// if world is true, the matrix is given in world space, if world is false it's given in local space
-    /// </summary>
-    /// <param name="t"></param>
-    /// <param name="world"></param>
-    /// <returns></returns>
+    public void GrabCalculation()
+    {
+        if (rightHandGrab.action.IsPressed())
+        {
+            if (rightGrabbedObject == null && rightHandCollider.isColliding &&
+                rightHandCollider.collidingObject != leftGrabbedObject)
+            {
+                // initial offset calculation
+                rightGrabbedObject = rightHandCollider.collidingObject;
+                rightOffsetMat = GetTransformationMatrix(rightHandCollider.transform, true).inverse *
+                                GetTransformationMatrix(rightGrabbedObject.transform, true);
+                
+                rightGrabbedObject.GetComponent<MaterialHandler>().Grab(true);
+            }
+            else if (rightGrabbedObject != null)
+            {
+                Matrix4x4 newTransform = GetTransformationMatrix(rightHandCollider.transform, true) * rightOffsetMat;
+
+                rightGrabbedObject.transform.position = newTransform.GetColumn(3);
+                rightGrabbedObject.transform.rotation = newTransform.rotation;
+            }
+        }
+        else if(rightGrabbedObject != null)
+        {
+            rightGrabbedObject.GetComponent<MaterialHandler>().Grab(false);
+            rightGrabbedObject = null;
+            rightOffsetMat = Matrix4x4.identity;
+        }
+        
+        if (leftHandGrab.action.IsPressed())
+        {
+            if (leftGrabbedObject == null && leftHandCollider.isColliding &&
+                leftHandCollider.collidingObject != rightGrabbedObject)
+            {
+                // initial offset calculation
+                leftGrabbedObject = leftHandCollider.collidingObject;
+                leftOffsetMat = GetTransformationMatrix(leftHandCollider.transform, true).inverse *
+                                GetTransformationMatrix(leftGrabbedObject.transform, true);
+                
+                leftGrabbedObject.GetComponent<MaterialHandler>().Grab(true);
+            }
+            else if (leftGrabbedObject != null)
+            {
+                Matrix4x4 newTransform = GetTransformationMatrix(leftHandCollider.transform, true) * leftOffsetMat;
+
+                leftGrabbedObject.transform.position = newTransform.GetColumn(3);
+                leftGrabbedObject.transform.rotation = newTransform.rotation;
+            }
+        }
+        else if(leftGrabbedObject != null)
+        {
+            leftGrabbedObject.GetComponent<MaterialHandler>().Grab(false);
+            leftGrabbedObject = null;
+            leftOffsetMat = Matrix4x4.identity;
+        }
+    }
+
     public Matrix4x4 GetTransformationMatrix(Transform t, bool world = true)
     {
         if (world)
