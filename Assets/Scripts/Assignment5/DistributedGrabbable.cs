@@ -15,12 +15,24 @@ public class DistributedGrabbable : MonoBehaviourPun
 
     public bool RequestGrab()
     {
-        return false;
+        
+        if (isGrabbed)
+        {
+
+            return false;
+            
+        }
+        else
+        {
+            photonView.RPC("GrabRPC", RpcTarget.AllBuffered, true);
+            photonView.RequestOwnership();
+            return true;
+        }
     }
 
     public void Release()
     {
-        
+        photonView.RPC("GrabRPC", RpcTarget.AllBuffered, false);
     }
 
     #endregion
@@ -30,7 +42,7 @@ public class DistributedGrabbable : MonoBehaviourPun
     [PunRPC]
     public void GrabRPC(bool b)
     {
-        
+        isGrabbed = b;
     }
 
     #endregion
