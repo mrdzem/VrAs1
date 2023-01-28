@@ -1681,6 +1681,7 @@ GameObject:
   - component: {fileID: 8451734867230932929}
   - component: {fileID: 5806007673107991617}
   - component: {fileID: 2286947409461370461}
+  - component: {fileID: 1953780387130043430}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -1729,6 +1730,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameSphere: {fileID: 7756182582350080672, guid: 47365d2a2760db744944d0c45a4f2622, type: 3}
+  gameSelectionButtons: {fileID: 5520114017723505319, guid: 59c1163a8b7035a4a9817ec2e7c37f41, type: 3}
+  scoreBoardPrefab: {fileID: 5996528988212776808, guid: f0890c9eceae3da40a7c673c236bf15a, type: 3}
   gameActivation:
     m_UseReference: 1
     m_Action:
@@ -1767,6 +1770,28 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -6131295136447488360, guid: 4dcb2ecf12c5efc42a938a23e1a9516d, type: 3}
+--- !u!114 &1953780387130043430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8528029550209610418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &9000724619460560061
 GameObject:
   m_ObjectHideFlags: 0
