@@ -90,7 +90,8 @@ public class GameScript : MonoBehaviourPun
 
     void Update()
     {
-        menuHandler();
+        Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
+        menuHandler(isPlayerOne, isPlayerTwo);
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
@@ -269,6 +270,7 @@ public class GameScript : MonoBehaviourPun
 
     private void queue()
     {
+
         if(myPlayerNumber == -1)
         {
             updateScoreBoardText("Other players are currently playing");
@@ -286,21 +288,21 @@ public class GameScript : MonoBehaviourPun
 
 
     #region Custom Methods
-    private void joinGame()
+    private void joinGame(bool pl1, bool pl2)
     {
-        Debug.Log("player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
-        if(!isPlayerOne)
+        Debug.Log("joingame          player 1 status: " + pl1 + "      player 2 status: " + pl2);
+        if (!pl1)
         {
             Debug.Log("adding player 1");
             myPlayerNumber = 0;
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.All, myPlayerNumber);
             
         }
-        else if (!isPlayerTwo)
+        else if (!pl2)
         {
             Debug.Log("adding player 2");
             myPlayerNumber = 1;
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.All, myPlayerNumber);
             
         }
         else
@@ -422,9 +424,9 @@ public class GameScript : MonoBehaviourPun
 
     /// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// //////////////////
 
-    public void menuHandler()
+    public void menuHandler(bool pl1, bool pl2)
     {
-        
+        Debug.Log("menu handler           player 1 status: " + pl1 + "      player 2 status: " + pl2);
         //right press
         if (rightHandGrab.action.WasPressedThisFrame() && !isLeftPressed)
         {
@@ -450,7 +452,9 @@ public class GameScript : MonoBehaviourPun
             isRightPressed = false;
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(rightHandCollider, selected);
+                pl1 = true;
+                Debug.Log("menu handler2           player 1 status: " + pl1 + "      player 2 status: " + pl2);
+                buttonReleaseCheck(rightHandCollider, selected, pl1, pl2);
             }
             selected = -1;
 
@@ -461,7 +465,7 @@ public class GameScript : MonoBehaviourPun
             isLeftPressed = false;
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(leftHandCollider, selected);
+                buttonReleaseCheck(leftHandCollider, selected, pl1, pl2);
             }
             selected = -1;
 
@@ -486,7 +490,7 @@ public class GameScript : MonoBehaviourPun
 
         if(myPlayerNumber != -1)
         {
-            photonView.RPC("removePlayersRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            photonView.RPC("removePlayersRPC", RpcTarget.All, myPlayerNumber);
             myPlayerNumber = -1;
         }
 }
@@ -568,8 +572,10 @@ public class GameScript : MonoBehaviourPun
     {
         scoreBoard.GetComponentInChildren<TextMeshPro>().text = newText;
     }
-    private void buttonReleaseCheck(GameObject hand, int pressedButton)
+
+    private void buttonReleaseCheck(GameObject hand, int pressedButton, bool pl1, bool pl2)
     {
+        Debug.Log("button press      player 1 status: " + pl1 + "      player 2 status: " + pl2);
         Renderer[] buttonColor = gameModeSelect.GetComponentsInChildren<Renderer>();
         if (checkButtonCollision(hand) == 0 && checkButtonCollision(hand) == pressedButton)
         {
@@ -582,7 +588,7 @@ public class GameScript : MonoBehaviourPun
             unactivateButtons();
             activateScoreBoard();
             sphereActivation();
-            joinGame();
+            joinGame(pl1, pl2);
             gameSetupStage = 5;
         }
         buttonColor[0].material.color = Color.white;
