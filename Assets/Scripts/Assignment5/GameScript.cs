@@ -97,7 +97,7 @@ public class GameScript : MonoBehaviourPun
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
-            photonView.RPC("testPUN", RpcTarget.AllBuffered, someTestValue);
+            joinGame();
             
             if (gameSetupStage == 0)
             {
@@ -588,7 +588,7 @@ public class GameScript : MonoBehaviourPun
             unactivateButtons();
             activateScoreBoard();
             sphereActivation();
-            joinGame();
+            //joinGame();
             gameSetupStage = 5;
         }
         buttonColor[0].material.color = Color.white;
