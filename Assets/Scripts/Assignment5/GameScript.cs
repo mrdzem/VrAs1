@@ -452,7 +452,6 @@ public class GameScript : MonoBehaviourPun
             isRightPressed = false;
             if (gameSetupStage == 1)
             {
-                pl1 = true;
                 Debug.Log("menu handler2           player 1 status: " + pl1 + "      player 2 status: " + pl2);
                 buttonReleaseCheck(rightHandCollider, selected, pl1, pl2);
             }
