@@ -93,7 +93,7 @@ public class GameScript : MonoBehaviourPun
     void Update()
     {
         Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
-        menuHandler(isPlayerOne, isPlayerTwo);
+        menuHandler();
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
@@ -259,7 +259,6 @@ public class GameScript : MonoBehaviourPun
         {
             photonView.RPC("updateCountDownRPC", RpcTarget.AllBuffered, multiCountDown - Time.deltaTime);
         }
-        Debug.Log(multiCountDown);
         
         if (multiCountDown <= 5 && multiCountDown >= 0)
         {
@@ -292,29 +291,24 @@ public class GameScript : MonoBehaviourPun
 
 
     #region Custom Methods
-    private void joinGame(bool pl1, bool pl2)
+    private void joinGame()
     {
-        Debug.Log("joingame          player 1 status: " + pl1 + "      player 2 status: " + pl2);
-        if (!pl1)
+        if (!isPlayerOne)
         {
-            Debug.Log("adding player 1");
             myPlayerNumber = 0;
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered);
             
         }
-        else if (!pl2)
+        else if (!isPlayerTwo)
         {
-            Debug.Log("adding player 2");
             myPlayerNumber = 1;
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered);
             
         }
         else
         {
-            Debug.Log("Both places occupied");
             myPlayerNumber = -1;
         }
-        Debug.Log("player number  " + myPlayerNumber);
     }
     #endregion
 
@@ -324,7 +318,7 @@ public class GameScript : MonoBehaviourPun
     public void testPUN(int val)
     {
         someTestValue = val + 1;
-        Debug.Log("test PUN; " + someTestValue);
+
     }
 
     [PunRPC]
@@ -399,15 +393,14 @@ public class GameScript : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void addPlayerRPC(int PNumber)
+    public void addPlayerRPC()
     {
-        Debug.Log(PNumber);
-        if (PNumber == 0)
+        if (!isPlayerOne)
         {
             Debug.Log("add playerRPC 1");
             isPlayerOne = true;
         }
-        else if (PNumber == 1)
+        else if (!isPlayerTwo)
         {
             Debug.Log("add playerRPC 2");
             isPlayerTwo = true;
@@ -435,9 +428,8 @@ public class GameScript : MonoBehaviourPun
 
     /// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// //////////////////
 
-    public void menuHandler(bool pl1, bool pl2)
+    public void menuHandler()
     {
-        Debug.Log("menu handler           player 1 status: " + pl1 + "      player 2 status: " + pl2);
         //right press
         if (rightHandGrab.action.WasPressedThisFrame() && !isLeftPressed)
         {
@@ -463,7 +455,7 @@ public class GameScript : MonoBehaviourPun
             isRightPressed = false;
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(rightHandCollider, selected, pl1, pl2);
+                buttonReleaseCheck(rightHandCollider, selected);
             }
             selected = -1;
 
@@ -474,7 +466,7 @@ public class GameScript : MonoBehaviourPun
             isLeftPressed = false;
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(leftHandCollider, selected, pl1, pl2);
+                buttonReleaseCheck(leftHandCollider, selected);
             }
             selected = -1;
 
@@ -582,9 +574,8 @@ public class GameScript : MonoBehaviourPun
         scoreBoard.GetComponentInChildren<TextMeshPro>().text = newText;
     }
 
-    private void buttonReleaseCheck(GameObject hand, int pressedButton, bool pl1, bool pl2)
+    private void buttonReleaseCheck(GameObject hand, int pressedButton)
     {
-        Debug.Log("button press      player 1 status: " + pl1 + "      player 2 status: " + pl2);
         Renderer[] buttonColor = gameModeSelect.GetComponentsInChildren<Renderer>();
         if (checkButtonCollision(hand) == 0 && checkButtonCollision(hand) == pressedButton)
         {
@@ -597,7 +588,7 @@ public class GameScript : MonoBehaviourPun
             unactivateButtons();
             activateScoreBoard();
             sphereActivation();
-            joinGame(pl1, pl2);
+            joinGame();
             gameSetupStage = 5;
         }
         buttonColor[0].material.color = Color.white;
