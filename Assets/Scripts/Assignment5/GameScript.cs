@@ -60,7 +60,7 @@ public class GameScript : MonoBehaviourPun
 
     bool isNewRound = false;
 
-    bool someTestValue = false;
+    int someTestValue = 0;
 
 
 
@@ -98,7 +98,7 @@ public class GameScript : MonoBehaviourPun
         if (gameActivation.action.WasPressedThisFrame())
         {
             photonView.RPC("testPUN", RpcTarget.AllBuffered, someTestValue);
-            Debug.Log("test PUN; " + someTestValue);
+            
             if (gameSetupStage == 0)
             {
                 activateButtons();
@@ -321,9 +321,10 @@ public class GameScript : MonoBehaviourPun
     #region RPCS
 
     [PunRPC]
-    public void testPUN(bool val)
+    public void testPUN(int val)
     {
-        someTestValue = !val;
+        someTestValue = val + 1;
+        Debug.Log("test PUN; " + someTestValue);
     }
 
     [PunRPC]
