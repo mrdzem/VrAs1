@@ -60,6 +60,8 @@ public class GameScript : MonoBehaviourPun
 
     bool isNewRound = false;
 
+    bool someTestValue = false;
+
 
 
     private int gameSetupStage = 0;
@@ -95,6 +97,8 @@ public class GameScript : MonoBehaviourPun
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
+            photonView.RPC("testPUN", RpcTarget.AllBuffered, someTestValue);
+            Debug.Log("test PUN; " + someTestValue);
             if (gameSetupStage == 0)
             {
                 activateButtons();
@@ -295,14 +299,14 @@ public class GameScript : MonoBehaviourPun
         {
             Debug.Log("adding player 1");
             myPlayerNumber = 0;
-            photonView.RPC("addPlayerRPC", RpcTarget.All, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
             
         }
         else if (!pl2)
         {
             Debug.Log("adding player 2");
             myPlayerNumber = 1;
-            photonView.RPC("addPlayerRPC", RpcTarget.All, myPlayerNumber);
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
             
         }
         else
@@ -315,6 +319,12 @@ public class GameScript : MonoBehaviourPun
     #endregion
 
     #region RPCS
+
+    [PunRPC]
+    public void testPUN(bool val)
+    {
+        someTestValue = !val;
+    }
 
     [PunRPC]
     public void resetPlayersScore()
@@ -452,7 +462,6 @@ public class GameScript : MonoBehaviourPun
             isRightPressed = false;
             if (gameSetupStage == 1)
             {
-                Debug.Log("menu handler2           player 1 status: " + pl1 + "      player 2 status: " + pl2);
                 buttonReleaseCheck(rightHandCollider, selected, pl1, pl2);
             }
             selected = -1;
@@ -489,7 +498,7 @@ public class GameScript : MonoBehaviourPun
 
         if(myPlayerNumber != -1)
         {
-            photonView.RPC("removePlayersRPC", RpcTarget.All, myPlayerNumber);
+            photonView.RPC("removePlayersRPC", RpcTarget.AllBuffered, myPlayerNumber);
             myPlayerNumber = -1;
         }
 }
