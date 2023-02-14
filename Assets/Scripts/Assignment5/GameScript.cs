@@ -43,7 +43,7 @@ public class GameScript : MonoBehaviourPun
     private int currentHitSphere = 0;
     int selected = -1;
 
-    private bool isPlayerOne = true;
+    private bool isPlayerOne = false;
     private bool isPlayerTwo = false;
     private int myPlayerNumber = -1;
 
@@ -90,7 +90,6 @@ public class GameScript : MonoBehaviourPun
 
     void Update()
     {
-        //Debug.Log("isPlayer1 "+ isPlayerOne + "     isPlayer2 "+isPlayerTwo +  "      myplayernum " +myPlayerNumber);
         menuHandler();
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
@@ -289,20 +288,27 @@ public class GameScript : MonoBehaviourPun
     #region Custom Methods
     private void joinGame()
     {
+        Debug.Log("player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
         if(!isPlayerOne)
         {
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered);
+            Debug.Log("adding player 1");
             myPlayerNumber = 0;
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            
         }
         else if (!isPlayerTwo)
         {
-            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered);
+            Debug.Log("adding player 2");
             myPlayerNumber = 1;
+            photonView.RPC("addPlayerRPC", RpcTarget.AllBuffered, myPlayerNumber);
+            
         }
         else
         {
+            Debug.Log("Both places occupied");
             myPlayerNumber = -1;
         }
+        Debug.Log("player number  " + myPlayerNumber);
     }
     #endregion
 
@@ -380,15 +386,17 @@ public class GameScript : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void addPlayerRPC()
+    public void addPlayerRPC(int PNumber)
     {
-        Debug.Log("add player");
-        if (!isPlayerOne)
+        Debug.Log(PNumber);
+        if (PNumber == 0)
         {
+            Debug.Log("add playerRPC 1");
             isPlayerOne = true;
         }
-        else if (!isPlayerTwo)
+        else if (PNumber == 1)
         {
+            Debug.Log("add playerRPC 2");
             isPlayerTwo = true;
         }
     }
