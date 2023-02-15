@@ -58,6 +58,7 @@ public class GameScript : MonoBehaviourPun
     bool didPlayer2hit = false;
     float player1LastTime;
     float player2LastTime;
+    float stage1Timer = 3f;
 
     bool isNewRound = false;
 
@@ -93,7 +94,6 @@ public class GameScript : MonoBehaviourPun
 
     void Update()
     {
-        Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
         menuHandler();
 
         if (multiGameActivation.action.WasPressedThisFrame())
@@ -168,74 +168,82 @@ public class GameScript : MonoBehaviourPun
         {
             if (multiPlayerRoundStage == 0)
             {
-                
+                if (myPlayerNumber == 1)
+                {
+                    updateScoreBoardText("Me   " + player2Score + " : " + player1Score + "   Opponent");
+                }
+                if (myPlayerNumber == 0)
+                {
+                    updateScoreBoardText("Me   " + player1Score + " : " + player2Score + "   Opponent");
+                }
                 spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.white;
                 if (myPlayerNumber == 1)
                 {
                     photonView.RPC("multiDrawHitSphere", RpcTarget.AllBuffered);
                     photonView.RPC("multiDrawTimeTillNext", RpcTarget.AllBuffered);
-                    photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 1);
+                    
                 }
-                
+                gameSetupStage = 1;
                 isNewRound = true;
+                stage1Timer = 3f;
             }
             if (multiPlayerRoundStage == 1)
             {
-
-                if (isNewRound)
+                stage1Timer -= Time.deltaTime;
+                if(stage1Timer < 0)
                 {
-                    isNewRound = false;
-                    currentHitSphere = currentMultiHitSphere;
-                    timeTillNextHit = multiTimeTillNextHit;
-                    Debug.Log("local sphere; " + currentMultiHitSphere + "     local time left; " + timeTillNextHit);
+                    if (isNewRound)
+                    {
+                        isNewRound = false;
+                        currentHitSphere = currentMultiHitSphere;
+                        timeTillNextHit = multiTimeTillNextHit;
+                        Debug.Log("local sphere; " + currentMultiHitSphere + "     local time left; " + timeTillNextHit);
+                    }
+                    timeTillNextHit -= Time.deltaTime;
+                    Debug.Log(timeTillNextHit);
+                    if (timeTillNextHit < 0)
+                    {
+                        multiPlayerRoundStage = 2;
+                        roundStartTime = Time.time;
+                        spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.blue;
+                    }
                 }
-                timeTillNextHit -= Time.deltaTime;
-                Debug.Log(timeTillNextHit);
-                if (timeTillNextHit < 0)
-                {
-                    multiPlayerRoundStage = 2;
-                    roundStartTime = Time.time;
-                    spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.blue;
-                }
+                
             }
             if (multiPlayerRoundStage == 2)
             {
+                Debug.Log("did player 1 hit: " + didPlayer1hit + "   did player 2 hit: " + didPlayer2hit);
                 if (rightHandGrab.action.WasPressedThisFrame())
                 {
                     if (checkSphereCollision(rightHandCollider) == currentHitSphere)
                     {
                         photonView.RPC("updatePlayerLastTime", RpcTarget.AllBuffered, myPlayerNumber, Time.time - roundStartTime);
                         singlePlayerTimeScore += Time.time - roundStartTime;
-                        photonView.RPC("updateDidPlayer", RpcTarget.AllBuffered, myPlayerNumber, true);
+                        Debug.Log("single playewr time " + singlePlayerTimeScore);
+                        photonView.RPC("updateDidPlayer", RpcTarget.All, myPlayerNumber, true);
 
                         spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.green;
                     }
                 }
-                if(myPlayerNumber == 1 && didPlayer1hit && didPlayer2hit)
+                Debug.Log("play1 time: " + player1LastTime + "   play2 time: " + player2LastTime);
+                if (myPlayerNumber == 1 && didPlayer1hit && didPlayer2hit)
                 {
                     if(player1LastTime > player2LastTime)
                     {
-                        photonView.RPC("increasePlayerScore", RpcTarget.AllBuffered, 1);
+                        photonView.RPC("increasePlayerScore", RpcTarget.All, 1);
                     }
                     else
                     {
-                        photonView.RPC("increasePlayerScore", RpcTarget.AllBuffered, 0);
+                        photonView.RPC("increasePlayerScore", RpcTarget.All, 0);
                     }
-                    photonView.RPC("updateDidPlayer", RpcTarget.AllBuffered, 0, false);
-                    photonView.RPC("updateDidPlayer", RpcTarget.AllBuffered, 1, false);
+                    photonView.RPC("updateDidPlayer", RpcTarget.All, 0, false);
+                    photonView.RPC("updateDidPlayer", RpcTarget.All, 1, false);
                     photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 3);
                 }
             }
             if (multiPlayerRoundStage == 3)
             {
-                if(myPlayerNumber == 1)
-                {
-                    updateScoreBoardText("Me   " + player2Score + " : " +player1Score + "   Opponent");
-                }
-                if (myPlayerNumber == 0)
-                {
-                    updateScoreBoardText("Me   " + player1Score + " : " + player2Score + "   Opponent");
-                }
+                
 
                 if (myPlayerNumber == 1)
                 {
