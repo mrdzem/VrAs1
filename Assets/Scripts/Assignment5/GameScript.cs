@@ -13,6 +13,7 @@ public class GameScript : MonoBehaviourPun
     public GameObject scoreBoardPrefab;
 
     public InputActionProperty gameActivation;
+    public InputActionProperty multiGameActivation;
 
     public GameObject rightHandCollider;
     public GameObject leftHandCollider;
@@ -93,19 +94,19 @@ public class GameScript : MonoBehaviourPun
     void Update()
     {
         Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
-        if (menuHandler())
-        {
-            joinGame();
-        }
+        menuHandler();
+
+
+
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
 
-            
-            
+
+
             if (gameSetupStage == 0)
             {
- 
+
                 activateButtons();
                 gameSetupStage++;
             }
@@ -118,7 +119,7 @@ public class GameScript : MonoBehaviourPun
         updateSpheresPosition();
         updateScoreBoardPosition();
 
-        if(gameSetupStage == 2)
+        if (gameSetupStage == 2)
         {
             preGameCountdown();
         }
@@ -126,7 +127,15 @@ public class GameScript : MonoBehaviourPun
         {
             singlePlayerGame();
         }
-        if(gameSetupStage == 5)
+        if (gameSetupStage == 5)
+        {
+            if (multiGameActivation.action.WasPressedThisFrame())
+            {
+                joinGame();
+            }
+
+        }
+        if (gameSetupStage == 8)
         {
             queue();
         }
@@ -140,7 +149,7 @@ public class GameScript : MonoBehaviourPun
             {
                 multiGame();
             }
-        }else if(gameSetupStage > 5)
+        }else if(gameSetupStage > 5 && gameSetupStage < 8)
         {
             updateScoreBoardText("Other player left the game");
         }
@@ -314,6 +323,7 @@ public class GameScript : MonoBehaviourPun
         {
             myPlayerNumber = -1;
         }
+        gameSetupStage = 8;
     }
     #endregion
 
@@ -480,6 +490,7 @@ public class GameScript : MonoBehaviourPun
             selected = -1;
             if (gameModeSelected == 5)
             {
+                updateScoreBoardText("Press left joystick to enter lobby");
                 return true;
             }
          
@@ -494,10 +505,6 @@ public class GameScript : MonoBehaviourPun
             if (gameSetupStage == 1)
             {
                 int gameModeSelected = buttonReleaseCheck(leftHandCollider, selected);
-                if (gameModeSelected == 5)
-                {
-                    joinGame();
-                }
                 if (gameModeSelected >= 0)
                 {
                     unactivateButtons();

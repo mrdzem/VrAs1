@@ -1744,6 +1744,18 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 3569983115185642217, guid: 21fa8b5b38dda864d8f8061dbcfd6b56, type: 3}
+  multiGameActivation:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Multi Game Activation
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 2c976831-1ed4-4572-bad1-492f83993588
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -5106820570471699676, guid: 21fa8b5b38dda864d8f8061dbcfd6b56, type: 3}
   rightHandCollider: {fileID: 6457533396108458968}
   leftHandCollider: {fileID: 463248245373353196}
   rightHandGrab:
