@@ -183,7 +183,7 @@ public class GameScript : MonoBehaviourPun
                     photonView.RPC("multiDrawTimeTillNext", RpcTarget.AllBuffered);
                     
                 }
-                gameSetupStage = 1;
+                multiPlayerRoundStage = 1;
                 isNewRound = true;
                 stage1Timer = 3f;
             }
