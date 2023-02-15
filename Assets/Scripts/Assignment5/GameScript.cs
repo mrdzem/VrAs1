@@ -492,7 +492,7 @@ public class GameScript : MonoBehaviourPun
             selected = -1;
             if (gameModeSelected == 5)
             {
-                updateScoreBoardText("Press left joystick to enter lobby");
+                updateScoreBoardText("Press left menu button to enter lobby");
                 return true;
             }
          
