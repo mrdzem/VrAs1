@@ -167,6 +167,7 @@ public class GameScript : MonoBehaviourPun
         {
             if (multiPlayerRoundStage == 0)
             {
+                Debug.Log("Stage 0");
                 spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.white;
                 if (myPlayerNumber == 1)
                 {
@@ -174,10 +175,12 @@ public class GameScript : MonoBehaviourPun
                     photonView.RPC("multiDrawTimeTillNext", RpcTarget.AllBuffered);
                     photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 1);
                 }
+                Debug.Log("hit sphere; " + currentMultiHitSphere + "      time left; " + multiTimeTillNextHit + "        stage;" + multiPlayerRoundStage);
                 isNewRound = true;
             }
             if (multiPlayerRoundStage == 1)
             {
+                Debug.Log("Stage 0");
                 if (isNewRound)
                 {
                     isNewRound = false;
@@ -264,7 +267,7 @@ public class GameScript : MonoBehaviourPun
                 }
             }
             
-            gameSetupStage = 8;
+            gameSetupStage = 9;
             
         }
     }
