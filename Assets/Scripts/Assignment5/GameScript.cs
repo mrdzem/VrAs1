@@ -320,7 +320,7 @@ public class GameScript : MonoBehaviourPun
         else if (isPlayerOne && isPlayerTwo)
         {
             gameSetupStage = 6;
-            updateScoreBoardText("MultiPlayer game is about to start \n Grab Blue spheres with Right Hand \n And Yellow with your left");
+            updateScoreBoardText("MultiPlayer game is about to start \n Grab Blue spheres your hand");
         }
         else
         {
@@ -593,9 +593,9 @@ public class GameScript : MonoBehaviourPun
             }
             if (singlePlayerRoundStage == 2)
             {
-                if (rightHandGrab.action.WasPressedThisFrame())
+                if (rightHandGrab.action.WasPressedThisFrame() || leftHandGrab.action.WasPressedThisFrame())
                 {
-                    if (checkSphereCollision(rightHandCollider) == currentHitSphere)
+                    if (checkSphereCollision(rightHandCollider) == currentHitSphere || checkSphereCollision(leftHandCollider) == currentHitSphere)
                     {
                         singlePlayerRound++;
                         singlePlayerTimeScore += Time.time - roundStartTime;
@@ -763,7 +763,7 @@ public class GameScript : MonoBehaviourPun
 
     private void activateScoreBoard()
     {
-        updateScoreBoardText("The game is about to start \n Grab Blue spheres with Right Hand \n And Yellow with your left");
+        updateScoreBoardText("The game is about to start \n Grab Blue spheres with your hands \n There are 10 rounds");
         scoreBoard.transform.position = this.transform.position + this.transform.forward;
         scoreBoardOffset = this.transform.position - scoreBoard.transform.position;
         scoreBoard.SetActive(true);
