@@ -93,7 +93,10 @@ public class GameScript : MonoBehaviourPun
     void Update()
     {
         Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
-        menuHandler();
+        if (menuHandler())
+        {
+            joinGame();
+        }
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
@@ -430,7 +433,7 @@ public class GameScript : MonoBehaviourPun
 
     /// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// ///////////////////// //////////////////
 
-    public void menuHandler()
+    public bool menuHandler()
     {
         Renderer[] buttonColor = gameModeSelect.GetComponentsInChildren<Renderer>();
         //right press
@@ -454,14 +457,14 @@ public class GameScript : MonoBehaviourPun
 
         //right release
         if (!rightHandGrab.action.IsPressed() && isRightPressed)
-        { 
+        {
+            isRightPressed = false;
+            int gameModeSelected = 1;
+
+
             if (gameSetupStage == 1)
             {
-                int gameModeSelected = buttonReleaseCheck(rightHandCollider, selected);
-                if (gameModeSelected == 5)
-                {
-                    joinGame();
-                }
+                gameModeSelected = buttonReleaseCheck(rightHandCollider, selected);
                 if (gameModeSelected >= 0)
                 {
                     unactivateButtons();
@@ -472,9 +475,16 @@ public class GameScript : MonoBehaviourPun
                 
                 buttonColor[0].material.color = Color.white;
                 buttonColor[2].material.color = Color.white;
+                
             }
-            isRightPressed = false;
             selected = -1;
+            if (gameModeSelected == 5)
+            {
+                return true;
+            }
+         
+
+
 
         }
         //left relese
@@ -503,6 +513,7 @@ public class GameScript : MonoBehaviourPun
             selected = -1;
 
         }
+        return false;
     }
 
     private void resetGame()
