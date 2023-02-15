@@ -97,10 +97,12 @@ public class GameScript : MonoBehaviourPun
         //Updating position of game spheres
         if (gameActivation.action.WasPressedThisFrame())
         {
-            joinGame();
+
+            
             
             if (gameSetupStage == 0)
             {
+ 
                 activateButtons();
                 gameSetupStage++;
             }
@@ -430,6 +432,7 @@ public class GameScript : MonoBehaviourPun
 
     public void menuHandler()
     {
+        Renderer[] buttonColor = gameModeSelect.GetComponentsInChildren<Renderer>();
         //right press
         if (rightHandGrab.action.WasPressedThisFrame() && !isLeftPressed)
         {
@@ -451,23 +454,52 @@ public class GameScript : MonoBehaviourPun
 
         //right release
         if (!rightHandGrab.action.IsPressed() && isRightPressed)
-        {
-            isRightPressed = false;
+        { 
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(rightHandCollider, selected);
+                int gameModeSelected = buttonReleaseCheck(rightHandCollider, selected);
+                if (gameModeSelected == 5)
+                {
+                    joinGame();
+                }
+                if (gameModeSelected >= 0)
+                {
+                    unactivateButtons();
+                    sphereActivation();
+                    activateScoreBoard();
+                    gameSetupStage = gameModeSelected;
+                }
+                
+                buttonColor[0].material.color = Color.white;
+                buttonColor[2].material.color = Color.white;
             }
+            isRightPressed = false;
             selected = -1;
 
         }
         //left relese
         if (!leftHandGrab.action.IsPressed() && isLeftPressed)
         {
-            isLeftPressed = false;
+            
             if (gameSetupStage == 1)
             {
-                buttonReleaseCheck(leftHandCollider, selected);
+                int gameModeSelected = buttonReleaseCheck(leftHandCollider, selected);
+                if (gameModeSelected == 5)
+                {
+                    joinGame();
+                }
+                if (gameModeSelected >= 0)
+                {
+                    unactivateButtons();
+                    sphereActivation();
+                    activateScoreBoard();
+                    gameSetupStage = gameModeSelected;
+                }
+
+                buttonColor[0].material.color = Color.white;
+                buttonColor[2].material.color = Color.white;
             }
+            isLeftPressed = false;
             selected = -1;
 
         }
@@ -574,25 +606,19 @@ public class GameScript : MonoBehaviourPun
         scoreBoard.GetComponentInChildren<TextMeshPro>().text = newText;
     }
 
-    private void buttonReleaseCheck(GameObject hand, int pressedButton)
+    private int buttonReleaseCheck(GameObject hand, int pressedButton)
     {
-        Renderer[] buttonColor = gameModeSelect.GetComponentsInChildren<Renderer>();
+        
         if (checkButtonCollision(hand) == 0 && checkButtonCollision(hand) == pressedButton)
         {
-            unactivateButtons();
-            sphereActivation();
-            activateScoreBoard();
-            gameSetupStage = 2;
-        }else if (checkButtonCollision(hand) == 1 && checkButtonCollision(hand) == pressedButton)
-        {
-            unactivateButtons();
-            activateScoreBoard();
-            sphereActivation();
-            //joinGame();
-            gameSetupStage = 5;
+            return 2;
         }
-        buttonColor[0].material.color = Color.white;
-        buttonColor[2].material.color = Color.white;
+        else if (checkButtonCollision(hand) == 1 && checkButtonCollision(hand) == pressedButton)
+        {
+            return 5;
+        }
+        return -1;
+        
     }
 
     private int buttonPressCheck(GameObject hand)
