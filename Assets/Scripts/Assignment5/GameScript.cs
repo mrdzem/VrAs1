@@ -38,7 +38,7 @@ public class GameScript : MonoBehaviourPun
     private int singlePlayerRound = 0;
     private int singlePlayerRoundStage = 0; // 0 -> Generate random time, 1 -> Awaiting sphere to hit, 2 -> time to hit
     private float timeTillNextHit;
-    private float betweenRoundsTime = 1f;
+    private float betweenRoundsTime = 3f;
     private float roundStartTime;
     private float singlePlayerTimeScore = 0f;
     private int currentHitSphere = 0;
@@ -163,11 +163,12 @@ public class GameScript : MonoBehaviourPun
 
     private void multiGame()
     {
+        Debug.Log("Current stage:  " + multiPlayerRoundStage);
         if (player1Score < 10 && player2Score < 10)
         {
             if (multiPlayerRoundStage == 0)
             {
-                Debug.Log("Stage 0");
+                
                 spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.white;
                 if (myPlayerNumber == 1)
                 {
@@ -175,22 +176,24 @@ public class GameScript : MonoBehaviourPun
                     photonView.RPC("multiDrawTimeTillNext", RpcTarget.AllBuffered);
                     photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 1);
                 }
-                Debug.Log("hit sphere; " + currentMultiHitSphere + "      time left; " + multiTimeTillNextHit + "        stage;" + multiPlayerRoundStage);
+                
                 isNewRound = true;
             }
             if (multiPlayerRoundStage == 1)
             {
-                Debug.Log("Stage 0");
+
                 if (isNewRound)
                 {
                     isNewRound = false;
                     currentHitSphere = currentMultiHitSphere;
                     timeTillNextHit = multiTimeTillNextHit;
+                    Debug.Log("local sphere; " + currentMultiHitSphere + "     local time left; " + timeTillNextHit);
                 }
                 timeTillNextHit -= Time.deltaTime;
+                Debug.Log(timeTillNextHit);
                 if (timeTillNextHit < 0)
                 {
-                    photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 2);
+                    multiPlayerRoundStage = 2;
                     roundStartTime = Time.time;
                     spheres[currentHitSphere].GetComponent<Renderer>().material.color = Color.blue;
                 }
@@ -227,12 +230,21 @@ public class GameScript : MonoBehaviourPun
             {
                 if(myPlayerNumber == 1)
                 {
+                    updateScoreBoardText("Me   " + player2Score + " : " +player1Score + "   Opponent");
+                }
+                if (myPlayerNumber == 0)
+                {
+                    updateScoreBoardText("Me   " + player1Score + " : " + player2Score + "   Opponent");
+                }
+
+                if (myPlayerNumber == 1)
+                {
                     betweenRoundsTime -= Time.deltaTime;
                     if (betweenRoundsTime < 0)
                     {
 
                         photonView.RPC("updateRoundStatus", RpcTarget.AllBuffered, 0);
-                        betweenRoundsTime = 1;
+                        betweenRoundsTime = 3;
                     }
                 }
                 
@@ -537,7 +549,7 @@ public class GameScript : MonoBehaviourPun
         countDown = 8;
         singlePlayerRound = 0;
         singlePlayerRoundStage = 0;
-        betweenRoundsTime = 1f;
+        betweenRoundsTime = 3f;
         singlePlayerTimeScore = 0f;
         for (int i = 0; i < spheres.Count; i++)
         {
