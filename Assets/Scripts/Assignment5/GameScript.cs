@@ -96,6 +96,11 @@ public class GameScript : MonoBehaviourPun
         Debug.Log("update           player 1 status: " + isPlayerOne + "      player 2 status: " + isPlayerTwo);
         menuHandler();
 
+        if (multiGameActivation.action.WasPressedThisFrame())
+        {
+            joinGame();
+        }
+
 
 
         //Updating position of game spheres
@@ -129,10 +134,7 @@ public class GameScript : MonoBehaviourPun
         }
         if (gameSetupStage == 5)
         {
-            if (multiGameActivation.action.WasPressedThisFrame())
-            {
-                joinGame();
-            }
+            
 
         }
         if (gameSetupStage == 8)
